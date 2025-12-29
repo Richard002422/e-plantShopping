@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, updateQuantity } from './CartSlice';
+import { addItem, removeItem, updateQuantity } from '../redux/CartSlice'; // ajusta ruta si tu archivo está en otro lado
 import './CartItem.css';
 
 const CartItem = ({ onContinueShopping }) => {
-  const cart = useSelector(state => state.cart.items);
+  const cart = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
   // Calculate total amount for all products in the cart
@@ -28,20 +28,38 @@ const CartItem = ({ onContinueShopping }) => {
     alert('Functionality to be added for future reference');
   };
 
+  // ✅ "+" usando addItem(item) (incrementa si ya existe)
   const handleIncrement = (item) => {
-    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+    dispatch(addItem(item));
   };
 
+  // ✅ "-" usando updateQuantity (y si llega a 0, elimina)
   const handleDecrement = (item) => {
-    if (item.quantity > 1) {
-      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    const newQty = item.quantity - 1;
+
+    if (newQty >= 1) {
+      dispatch(updateQuantity({ name: item.name, quantity: newQty }));
     } else {
-      dispatch(removeItem({ name: item.name }));
+      dispatch(removeItem(item.name)); // <- string, como tu pista
     }
   };
 
+  // ✅ Eliminar directo
   const handleRemove = (item) => {
-    dispatch(removeItem({ name: item.name }));
+    dispatch(removeItem(item.name)); // <- string
+  };
+
+  // ✅ Cambiar cantidad con input (si es 0 o inválido, elimina)
+  const handleInputChange = (item, e) => {
+    const value = Number(e.target.value);
+
+    if (!Number.isFinite(value)) return;
+
+    if (value >= 1) {
+      dispatch(updateQuantity({ name: item.name, quantity: value }));
+    } else {
+      dispatch(removeItem(item.name));
+    }
   };
 
   // Calculate total cost based on quantity for an item
@@ -57,7 +75,7 @@ const CartItem = ({ onContinueShopping }) => {
       </h2>
 
       <div>
-        {cart.map(item => (
+        {cart.map((item) => (
           <div className="cart-item" key={item.name}>
             <img className="cart-item-image" src={item.image} alt={item.name} />
             <div className="cart-item-details">
@@ -72,7 +90,14 @@ const CartItem = ({ onContinueShopping }) => {
                   -
                 </button>
 
-                <span className="cart-item-quantity-value">{item.quantity}</span>
+                {/* ✅ Ahora es input controlado (como tu ejemplo) */}
+                <input
+                  className="cart-item-quantity-input"
+                  type="number"
+                  min="0"
+                  value={item.quantity}
+                  onChange={(e) => handleInputChange(item, e)}
+                />
 
                 <button
                   className="cart-item-button cart-item-button-inc"
