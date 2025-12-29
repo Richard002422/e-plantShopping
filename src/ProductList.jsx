@@ -9,7 +9,7 @@ import { addItem } from './CartSlice';
 function ProductList({ onHomeClick }) {
   const dispatch = useDispatch();
 
-  // ✅ Trae los items del carrito desde Redux
+  // Access the Redux store to retrieve and display the total quantity of items currently in the cart
   const cartItems = useSelector((state) => state.cart.items);
 
   const [showCart, setShowCart] = useState(false);
@@ -249,7 +249,7 @@ function ProductList({ onHomeClick }) {
     textDecoration: 'none',
   };
 
-  // ✅ Total de items en el carrito (Redux)
+  // Calculate total quantity of items in the cart from Redux store
   const calculateTotalQuantity = () => {
     return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
   };
@@ -275,9 +275,11 @@ function ProductList({ onHomeClick }) {
     setShowCart(false);
   };
 
-  // ✅ Integrado: dispatch(addItem(product)) + marcar como agregado
+  // Use the addItem action to add selected products to the cart
   const handleAddToCart = (product) => {
+    // Dispatch addItem action to add the product to the Redux store
     dispatch(addItem(product));
+    // Update local state to mark the product as added (for button disable functionality)
     setAddedToCart((prevState) => ({
       ...prevState,
       [product.name]: true,

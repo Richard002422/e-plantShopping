@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, updateQuantity } from './CartSlice';
+import { addItem, removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
 
 const CartItem = ({ onContinueShopping }) => {
@@ -40,26 +40,27 @@ const CartItem = ({ onContinueShopping }) => {
 
   // Increment the quantity of an item in the cart
   const handleIncrement = (item) => {
-    // Dispatch updateQuantity to increase the item quantity by 1
-    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+    // Use the addItem action to add a new product to the cart (or increment if it already exists)
+    dispatch(addItem(item));
   };
 
   // Decrement the quantity of an item in the cart
   const handleDecrement = (item) => {
     const newQty = item.quantity - 1;
 
+    // Use the updateQuantity action to change how many items are in the cart
     // If the quantity is greater than 1, dispatch updateQuantity to decrease the quantity by 1
     if (newQty >= 1) {
       dispatch(updateQuantity({ name: item.name, quantity: newQty }));
     } else {
-      // Otherwise, if the quantity would drop to 0, dispatch removeItem to remove the plant type from the cart
+      // Otherwise, if the quantity would drop to 0, use removeItem action to remove an article completely from the cart
       dispatch(removeItem(item.name));
     }
   };
 
   // Remove a plant type from the cart completely
   const handleRemove = (item) => {
-    // Dispatch removeItem action to remove the article from the cart
+    // Use the removeItem action to remove an article completely from the cart
     dispatch(removeItem(item.name));
   };
 
