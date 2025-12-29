@@ -3,16 +3,19 @@ import './ProductList.css';
 import CartItem from './CartItem';
 
 // ✅ Redux
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from '../redux/CartSlice'; // Ajusta la ruta según tu proyecto
 
 function ProductList({ onHomeClick }) {
   const dispatch = useDispatch();
 
+  // ✅ Trae los items del carrito desde Redux
+  const cartItems = useSelector((state) => state.cart.items);
+
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false);
 
-  // ✅ NUEVO: rastrea qué productos ya se agregaron al carrito
+  // ✅ rastrea qué productos ya se agregaron al carrito (para deshabilitar el botón)
   const [addedToCart, setAddedToCart] = useState({});
 
   const plantsArray = [
@@ -246,6 +249,11 @@ function ProductList({ onHomeClick }) {
     textDecoration: 'none',
   };
 
+  // ✅ Total de items en el carrito (Redux)
+  const calculateTotalQuantity = () => {
+    return cartItems ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
+  };
+
   const handleHomeClick = (e) => {
     e.preventDefault();
     onHomeClick();
@@ -267,7 +275,7 @@ function ProductList({ onHomeClick }) {
     setShowCart(false);
   };
 
-  // ✅ FUNCIONALIDAD: Agregar al carrito + marcar como agregado
+  // ✅ Integrado: dispatch(addItem(product)) + marcar como agregado
   const handleAddToCart = (product) => {
     dispatch(addItem(product));
     setAddedToCart((prevState) => ({
@@ -303,7 +311,12 @@ function ProductList({ onHomeClick }) {
 
           <div>
             <a href="#" onClick={handleCartClick} style={styleA}>
-              <h1 className="cart">
+              <h1 className="cart" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {/* ✅ Badge total items (Redux) */}
+                <span style={{ fontSize: 22, fontWeight: 700 }}>
+                  {calculateTotalQuantity()}
+                </span>
+
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" height="68" width="68">
                   <rect width="156" height="156" fill="none"></rect>
                   <circle cx="80" cy="216" r="12"></circle>
