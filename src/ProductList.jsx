@@ -4,7 +4,7 @@ import CartItem from './CartItem';
 
 // ✅ Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem } from '../redux/CartSlice'; // Ajusta la ruta según tu proyecto
+import { addItem } from './CartSlice';
 
 function ProductList({ onHomeClick }) {
   const dispatch = useDispatch();
@@ -338,40 +338,29 @@ function ProductList({ onHomeClick }) {
 
       {!showCart ? (
         <div className="product-grid">
-          {/* Si quieres ocultarlo hasta dar clic en "Plants", cambia a: showPlants && (...) */}
-          {plantsArray.map((categoryObj) => (
-            <div key={categoryObj.category} className="category-section">
-              <div className="plantname_heading">
-                <h2 className="plant_heading">{categoryObj.category}</h2>
-              </div>
-
+          {plantsArray.map((category, index) => (
+            <div key={index}>
+              <h1>
+                <div>{category.category}</div>
+              </h1>
               <div className="product-list">
-                {categoryObj.plants.map((plant) => {
+                {category.plants.map((plant, plantIndex) => {
                   const isAdded = !!addedToCart[plant.name];
 
                   return (
-                    <div
-                      key={`${categoryObj.category}-${plant.name}`}
-                      className="product-card"
-                    >
-                      <div className="product-title">{plant.name}</div>
-
+                    <div className="product-card" key={plantIndex}>
                       <img
                         className="product-image"
                         src={plant.image}
                         alt={plant.name}
-                        loading="lazy"
                       />
-
-                      <p className="product-description">{plant.description}</p>
-
-                      <div className="product-price">{plant.cost}</div>
-
+                      <div className="product-title">{plant.name}</div>
+                      <div className="product-description">{plant.description}</div>
+                      <div className="product-cost">{plant.cost}</div>
                       <button
                         className="product-button"
                         onClick={() => handleAddToCart(plant)}
                         disabled={isAdded}
-                        aria-disabled={isAdded}
                       >
                         {isAdded ? 'Added' : 'Add to Cart'}
                       </button>
